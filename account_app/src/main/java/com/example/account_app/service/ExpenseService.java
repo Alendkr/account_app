@@ -1,30 +1,35 @@
 package com.example.account_app.service;
 
 import com.example.account_app.model.Expense;
-import io.ebean.DB;
+import com.example.account_app.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ExpenseService {
 
-    public List<Expense> getAll() {
-        return DB.find(Expense.class).findList();
+    private final ExpenseRepository expenseRepository;
+
+    public ExpenseService(ExpenseRepository expenseRepository) {
+        this.expenseRepository = expenseRepository;
     }
 
-    public Optional<Expense> getById(Integer id) {
-        Expense expense = DB.find(Expense.class, id);
-        return Optional.ofNullable(expense);
+    public List<Expense> getAllExpenses() {
+        return expenseRepository.findAll();
     }
 
-    public Expense save(Expense expense) {
-        expense.save();
-        return expense;
+    public Expense getExpenseById(int id) {
+        return expenseRepository.findById(id);
     }
 
-    public void delete(Integer id) {
-        DB.delete(Expense.class, id);
+    public void createExpense(Expense expense) {
+        expenseRepository.save(expense);
+    }
+
+    public void deleteExpense(int id) {
+        Expense expense = expenseRepository.findById(id);
+        if (expense != null) {
+            expenseRepository.delete(expense);
+        }
     }
 }

@@ -1,31 +1,34 @@
 package com.example.account_app.service;
 
 import com.example.account_app.model.User;
-import io.ebean.Database;
+import com.example.account_app.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private final Database database;
+    private final UserRepository userRepository;
 
-    public UserService(Database database) {
-        this.database = database;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public void createUser(String username,String login,String password,Integer initialMoney) {
-        User user = new User();
-        user.setName(username);
-        user.setLogin(login);
-        user.setPassword(password); // в реальной жизни шифруем!
-
-        database.save(user);
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
-    public List<User> listUsers() {
-        return database.find(User.class).findList();
+    public Optional<User> getUserById(Integer id) {
+        return userRepository.findById(id);
+    }
+
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(Integer id) {
+        userRepository.deleteById(id);
     }
 }
-
