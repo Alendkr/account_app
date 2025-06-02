@@ -1,7 +1,7 @@
 package com.example.account_app.controller;
 
 import com.example.account_app.model.Expense;
-import com.example.account_app.service.ExpenseService;
+import com.example.account_app.service.expense.ExpenseService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,26 +17,36 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
-    @GetMapping
-    public List<Expense> getAllExpenses() {
-        return expenseService.getAllExpenses();
+    @GetMapping("/me")
+    public List<Expense> getMyExpenses() {
+        return expenseService.getExpensesForCurrentUser();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Expense> getExpenseById(@PathVariable int id) {
-        Expense expense = expenseService.getExpenseById(id);
-        return (expense != null) ? ResponseEntity.ok(expense) : ResponseEntity.notFound().build();
+        Expense expense = expenseService.getExpenseById(id)
+                .orElseThrow(() -> new RuntimeException("Расход не найден"));
+        return ResponseEntity.ok(expense);
     }
+
 
     @PostMapping
     public ResponseEntity<String> createExpense(@RequestBody Expense expense) {
-        expenseService.createExpense(expense);
-        return ResponseEntity.ok("Expense created successfully");
+        try {
+            expenseService.createExpense(expense);
+            return ResponseEntity.ok("Expense created successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteExpense(@PathVariable int id) {
-        expenseService.deleteExpense(id);
-        return ResponseEntity.ok("Expense deleted successfully");
+        try {
+            expenseService.deleteExpense(id);
+            return ResponseEntity.ok("Expense deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

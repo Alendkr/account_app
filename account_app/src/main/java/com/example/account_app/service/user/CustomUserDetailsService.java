@@ -1,4 +1,4 @@
-package com.example.account_app.service;
+package com.example.account_app.service.user;
 
 import com.example.account_app.model.User;
 import com.example.account_app.repository.UserRepository;
@@ -27,5 +27,8 @@ public class CustomUserDetailsService implements UserDetailsService {
                 /* тут роли/authorities, например Collections.emptyList() */
                 java.util.Collections.emptyList()
         );
+    }
+    public int getId() {
+        return id;
     }
 }

@@ -17,6 +17,7 @@ public class User extends Model {
     private Integer id;
 
     @NotNull
+    @Column(unique = true)
     private String name;
 
     @NotNull
@@ -26,7 +27,7 @@ public class User extends Model {
     @NotNull
     private String password;
 
-    private Integer money;
+    private Integer money = 0;
 
     public User(String name, String login, String password, Integer money) {
         this.name = name;

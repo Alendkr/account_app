@@ -1,7 +1,7 @@
 package com.example.account_app.config;
 
-import com.example.account_app.service.CustomUserDetailsService;
 import com.example.account_app.filter.JwtAuthFilter;
+import com.example.account_app.service.user.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,27 +27,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Отключаем CSRF для API
-                //.authorizeHttpRequests(auth -> auth
-                   //     .requestMatchers("/swagger-ui/**","/v3/api-docs/**", "/api/auth/**").permitAll()  // Разрешаем без токена запросы к +
-
-                      //  .anyRequest()//.authenticated()                  // Всё остальное — с авторизацией
-               // )
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Без сессий — JWT stateless
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Вставляем JWT фильтр
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/auth/**", "/api/users/register").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return NoOpPasswordEncoder.getInstance(); // 💥 Только для отладки!
     }
 
-    // Чтобы можно было аутентифицировать пользователя вручную (например, в сервисе логина)
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 }
-

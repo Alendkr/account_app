@@ -2,7 +2,7 @@ package com.example.account_app.controller;
 
 import com.example.account_app.dto.AuthRequest;
 import com.example.account_app.dto.AuthResponse;
-import com.example.account_app.service.CustomUserDetailsService;
+import com.example.account_app.service.user.CustomUserDetailsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import com.example.account_app.filter.JwtUtil;
+import com.example.account_app.util.JwtUtil;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,16 +29,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        System.out.println("Attempt login with username: " + request.getUsername() + ", password: " + request.getPassword());
+        System.out.println("Attempt auth with login: " + request.getLogin() + ", password: " + request.getPassword());
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword())
             );
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getLogin());
+            String login = request.getLogin();
             String token = jwtUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new AuthResponse(token));
+            return ResponseEntity.ok(new AuthResponse(token, login));
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный логин или пароль");
         }

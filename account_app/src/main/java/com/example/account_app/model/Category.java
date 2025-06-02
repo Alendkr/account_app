@@ -3,9 +3,15 @@ package com.example.account_app.model;
 import io.ebean.Model;
 import io.ebean.annotation.NotNull;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Categories")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category extends Model {
 
     @Id
@@ -19,37 +25,8 @@ public class Category extends Model {
     @JoinColumn(name = "UserID", nullable = false)
     private User user;
 
-    public Category(User user, String name) {
-        this.user = user;
-        this.name = name;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @Override
-    public String toString(){
+    public String toString() {
         return name;
     }
 }
