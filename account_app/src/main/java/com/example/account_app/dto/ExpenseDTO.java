@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Data
 public class ExpenseDTO {
+
     private int id;
     private String descr;
     private int amount;
@@ -13,9 +14,7 @@ public class ExpenseDTO {
     private Integer categoryId;
     private String categoryName;
 
-    public ExpenseDTO() {
-        // пустой конструктор
-    }
+    public ExpenseDTO() {}
 
     public ExpenseDTO(int id, String descr, int amount, LocalDate expenseDate, Integer categoryId, String categoryName) {
         this.id = id;
@@ -26,3 +25,4 @@ public class ExpenseDTO {
         this.categoryName = categoryName;
     }
 }
+

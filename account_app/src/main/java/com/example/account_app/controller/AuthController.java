@@ -12,6 +12,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import com.example.account_app.util.JwtUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,6 +26,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
     private final CustomUserDetailsService userDetailsService;
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         this.authenticationManager = authenticationManager;
@@ -29,19 +36,22 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        System.out.println("Attempt auth with login: " + request.getLogin() + ", password: " + request.getPassword());
+        log.info("Attempt auth with login: {}", request.getLogin());
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getLogin(), request.getPassword())
             );
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getLogin());
-            String login = request.getLogin();
             String token = jwtUtil.generateToken(userDetails);
 
-            return ResponseEntity.ok(new AuthResponse(token, login));
+            return ResponseEntity.ok(new AuthResponse(token, request.getLogin()));
         } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный логин или пароль");
+            log.warn("Failed login for user: {}", request.getLogin());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    Map.of("error", "Неверный логин или пароль")
+            );
         }
     }
+
 }

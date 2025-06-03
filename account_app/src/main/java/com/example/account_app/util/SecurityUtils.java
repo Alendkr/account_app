@@ -1,8 +1,6 @@
 package com.example.account_app.util;
 
-
-import com.example.account_app.model.User;
-import com.example.account_app.service.user.CustomUserDetailsService;
+import com.example.account_app.service.user.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -17,8 +15,8 @@ public class SecurityUtils {
 
         Object principal = authentication.getPrincipal();
 
-        if (principal instanceof CustomUserDetailsService) {
-            return ((CustomUserDetailsService) principal).getId(); // 💥 предполагаем, что ты добавил getId()
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getId();
         } else {
             throw new RuntimeException("Principal is not an instance of CustomUserDetails");
         }

@@ -1,13 +1,16 @@
 package com.example.account_app.service.receipt;
 
 import com.example.account_app.dto.ReceiptDTO;
+import com.example.account_app.mapper.ReceiptMapper;
 import com.example.account_app.model.Receipt;
 import com.example.account_app.model.User;
 import com.example.account_app.repository.ReceiptRepository;
 import com.example.account_app.repository.UserRepository;
+import com.example.account_app.util.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,25 +24,31 @@ public class ReceiptService {
         this.userRepository = userRepository;
     }
 
-    public List<ReceiptDTO> getAllByUserLogin(String login) {
-        User user = userRepository.findByLogin(login)
+    public List<ReceiptDTO> getReceiptsForCurrentUser() {
+        int currentUserId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        List<Receipt> receipts = receiptRepository.findByUser(user);
-
-        return receipts.stream()
-                .map(this::mapToDTO)
+        return receiptRepository.findByUser(user).stream()
+                .map(ReceiptMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    private ReceiptDTO mapToDTO(Receipt receipt) {
-        return new ReceiptDTO(
-                receipt.getId(),
-                receipt.getDescr(),
-                receipt.getAmount(),
-                receipt.getReceiptDate(),
-                receipt.getCategory() != null ? receipt.getCategory().getId() : null,
-                receipt.getCategory() != null ? receipt.getCategory().getName() : null
-        );
+    public Optional<ReceiptDTO> getReceiptById(int id) {
+        return receiptRepository.findById(id)
+                .map(ReceiptMapper::toDTO);
+    }
+
+    public void createReceipt(Receipt receipt) {
+        int currentUserId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        receipt.setUser(user);
+        receiptRepository.save(receipt);
+    }
+
+    public void deleteReceipt(int id) {
+        receiptRepository.deleteById(id);
     }
 }
+

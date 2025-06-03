@@ -1,10 +1,13 @@
 package com.example.account_app.controller;
 
+import com.example.account_app.dto.RegisterRequest;
 import com.example.account_app.dto.UserDTO;
 import com.example.account_app.mapper.UserMapper;
 import com.example.account_app.model.User;
 import com.example.account_app.service.user.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -17,6 +20,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
 
     @GetMapping("/get/all")
     public List<UserDTO> getAllUsers() {
@@ -31,12 +35,17 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public UserDTO createUser(@RequestBody UserDTO userDTO, @RequestParam String password) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO, @RequestParam String password) {
+        if (userService.existsByLogin(userDTO.getLogin())) {
+            return ResponseEntity.badRequest().body("Логин уже занят");
+        }
         User user = UserMapper.toEntity(userDTO);
-        user.setPassword(password);
-        User saved = userService.saveUser(user);
-        return UserMapper.toDTO(saved);
+        user.setPassword(password); // чистый пароль, не хэшируем здесь!
+        User saved = userService.saveUser(user); // хэширование в сервисе
+        return ResponseEntity.ok(UserMapper.toDTO(saved));
     }
+
+
 
     @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable Integer id) {

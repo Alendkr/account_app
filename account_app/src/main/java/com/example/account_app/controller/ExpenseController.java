@@ -1,5 +1,7 @@
 package com.example.account_app.controller;
 
+import com.example.account_app.dto.ExpenseDTO;
+import com.example.account_app.mapper.ExpenseMapper;
 import com.example.account_app.model.Expense;
 import com.example.account_app.service.expense.ExpenseService;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +19,18 @@ public class ExpenseController {
         this.expenseService = expenseService;
     }
 
+    // Возвращаем DTO, чтобы убрать ненужные поля
     @GetMapping("/me")
-    public List<Expense> getMyExpenses() {
-        return expenseService.getExpensesForCurrentUser();
+    public List<ExpenseDTO> getMyExpenses() {
+        return expenseService.getExpenseDTOsForCurrentUser();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Expense> getExpenseById(@PathVariable int id) {
+    public ResponseEntity<ExpenseDTO> getExpenseById(@PathVariable int id) {
         Expense expense = expenseService.getExpenseById(id)
                 .orElseThrow(() -> new RuntimeException("Расход не найден"));
-        return ResponseEntity.ok(expense);
+        ExpenseDTO dto = ExpenseMapper.toDTO(expense);
+        return ResponseEntity.ok(dto);
     }
 
 

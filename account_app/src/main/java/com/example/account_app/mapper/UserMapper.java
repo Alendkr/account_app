@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 public class UserMapper {
 
     public static UserDTO toDTO(User user) {
+        if (user == null) return null;
+
         return new UserDTO(
                 user.getName(),
                 user.getLogin()
@@ -16,6 +18,8 @@ public class UserMapper {
     }
 
     public static User toEntity(UserDTO userDTO) {
+        if (userDTO == null) return null;
+
         User user = new User();
         user.setName(userDTO.getName());
         user.setLogin(userDTO.getLogin());
@@ -23,6 +27,8 @@ public class UserMapper {
     }
 
     public static List<UserDTO> toDTOList(List<User> users) {
+        if (users == null) return List.of();
+
         return users.stream()
                 .map(UserMapper::toDTO)
                 .collect(Collectors.toList());

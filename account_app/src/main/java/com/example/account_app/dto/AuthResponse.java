@@ -1,19 +1,13 @@
 package com.example.account_app.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuthResponse {
     private String token;
     private String login;
-
-    public AuthResponse() {
-    }
-
-    public AuthResponse(String token, String login) {
-        this.token = token;
-        this.login = login;
-    }
 }
