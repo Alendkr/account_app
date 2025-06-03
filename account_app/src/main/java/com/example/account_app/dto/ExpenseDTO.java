@@ -25,4 +25,3 @@ public class ExpenseDTO {
         this.categoryName = categoryName;
     }
 }
-

@@ -1,9 +1,9 @@
 package com.example.account_app.controller;
 
 import com.example.account_app.dto.ExpenseDTO;
-import com.example.account_app.mapper.ExpenseMapper;
-import com.example.account_app.model.Expense;
 import com.example.account_app.service.expense.ExpenseService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,32 +14,43 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private static final Logger log = LoggerFactory.getLogger(ExpenseController.class);
 
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
 
-    // Возвращаем DTO, чтобы убрать ненужные поля
     @GetMapping("/me")
     public List<ExpenseDTO> getMyExpenses() {
-        return expenseService.getExpenseDTOsForCurrentUser();
+        log.info("Fetching expenses for current user");
+        List<ExpenseDTO> expenses = expenseService.getExpenseDTOsForCurrentUser();
+        log.info("Found {} expenses", expenses.size());
+        return expenses;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ExpenseDTO> getExpenseById(@PathVariable int id) {
-        Expense expense = expenseService.getExpenseById(id)
-                .orElseThrow(() -> new RuntimeException("Расход не найден"));
-        ExpenseDTO dto = ExpenseMapper.toDTO(expense);
-        return ResponseEntity.ok(dto);
+        log.info("Fetching expense by id: {}", id);
+        return expenseService.getExpenseById(id)
+                .map(dto -> {
+                    log.info("Expense found: {}", dto);
+                    return ResponseEntity.ok(dto);
+                })
+                .orElseGet(() -> {
+                    log.warn("Expense not found with id: {}", id);
+                    return ResponseEntity.notFound().build();
+                });
     }
 
-
     @PostMapping
-    public ResponseEntity<String> createExpense(@RequestBody Expense expense) {
+    public ResponseEntity<String> createExpense(@RequestBody ExpenseDTO dto) {
         try {
-            expenseService.createExpense(expense);
+            log.info("Creating new expense: {}", dto);
+            expenseService.createExpense(dto);
+            log.info("Expense created successfully");
             return ResponseEntity.ok("Expense created successfully");
         } catch (RuntimeException e) {
+            log.error("Error creating expense: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -47,9 +58,12 @@ public class ExpenseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteExpense(@PathVariable int id) {
         try {
+            log.info("Deleting expense with id: {}", id);
             expenseService.deleteExpense(id);
+            log.info("Expense deleted successfully");
             return ResponseEntity.ok("Expense deleted successfully");
         } catch (RuntimeException e) {
+            log.error("Error deleting expense: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

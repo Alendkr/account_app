@@ -16,10 +16,9 @@ public class CategoryMapper {
         );
     }
 
-
     public static Category toEntity(CategoryDTO dto) {
         Category category = new Category();
-        category.setId(dto.getId());
+        // ID не устанавливаем — пусть создаётся в БД
         category.setName(dto.getName());
         return category;
     }

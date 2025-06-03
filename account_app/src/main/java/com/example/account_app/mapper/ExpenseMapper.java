@@ -31,7 +31,7 @@ public class ExpenseMapper {
         if (dto == null) return null;
 
         Expense expense = new Expense();
-        expense.setId(dto.getId());
+        // expense.setId(dto.getId()); // удалено: id создаст БД
         expense.setUser(user);
         expense.setDescr(dto.getDescr());
         expense.setAmount(dto.getAmount());

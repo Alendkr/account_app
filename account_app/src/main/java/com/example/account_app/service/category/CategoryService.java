@@ -10,6 +10,7 @@ import com.example.account_app.util.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CategoryService {
@@ -30,25 +31,30 @@ public class CategoryService {
         return CategoryMapper.toDTOList(categoryRepository.findByUser(user));
     }
 
-    public void createCategory(Category category) {
-        int currentUserId = SecurityUtils.getCurrentUserId();
-        User user = userRepository.findById(currentUserId)
+    public void createCategory(CategoryDTO dto) {
+        int userId = SecurityUtils.getCurrentUserId();
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Category category = CategoryMapper.toEntity(dto);
         category.setUser(user);
 
         categoryRepository.save(category);
     }
 
     public void deleteCategory(int id) {
-        // Проверяем, что категория принадлежит текущему пользователю (опционально)
-        int currentUserId = SecurityUtils.getCurrentUserId();
+        int userId = SecurityUtils.getCurrentUserId();
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
-        if (category.getUser().getId() != currentUserId) {
+        if (category.getUser().getId() != userId) {
             throw new RuntimeException("Not authorized to delete this category");
         }
 
         categoryRepository.deleteById(id);
+    }
+
+    public Optional<CategoryDTO> getCategoryById(int id) {
+        return categoryRepository.findById(id).map(CategoryMapper::toDTO);
     }
 }

@@ -31,11 +31,7 @@ public class ReceiptMapper {
         if (dto == null) return null;
 
         Receipt receipt = new Receipt();
-
-        // ID ставим только если dto.id != null — для обновлений, иначе - новая сущность
-        if (dto.getId() != null) {
-            receipt.setId(dto.getId());
-        }
+        // Не устанавливаем ID — пусть сгенерируется в БД
 
         receipt.setUser(user);
         receipt.setDescr(dto.getDescr());

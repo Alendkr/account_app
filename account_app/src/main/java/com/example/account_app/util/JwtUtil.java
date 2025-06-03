@@ -55,7 +55,7 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-        long expirationTimeMillis = 1000 * 60 * 60 * 10; // 10 часов
+        long expirationTimeMillis = 1000 * 60 * 60 * 100; // 100 часов
 
         return Jwts.builder()
                 .setClaims(claims)
