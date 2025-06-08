@@ -2,6 +2,7 @@ package com.example.account_app.service.user;
 
 import com.example.account_app.model.User;
 import com.example.account_app.repository.UserRepository;
+import com.example.account_app.util.CustomUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

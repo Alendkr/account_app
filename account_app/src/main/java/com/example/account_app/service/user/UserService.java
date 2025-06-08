@@ -36,12 +36,14 @@ public class UserService {
         return userRepository.existsByLogin(login);
     }
 
-    public void deleteUser(Integer id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found with id: " + id);
+    public void deleteUserByLogin(String login) {
+        Optional<User> userOpt = userRepository.findByLogin(login);
+        if (userOpt.isEmpty()) {
+            throw new RuntimeException("User not found with login: " + login);
         }
-        userRepository.deleteById(id);
+        userRepository.delete(userOpt.get());
     }
+
 
     public Optional<User> getUserByLogin(String login) {
         return userRepository.findByLogin(login);

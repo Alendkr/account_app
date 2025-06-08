@@ -1,6 +1,5 @@
 package com.example.account_app.util;
 
-import com.example.account_app.service.user.CustomUserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

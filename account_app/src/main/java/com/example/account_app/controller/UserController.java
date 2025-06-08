@@ -1,19 +1,16 @@
 package com.example.account_app.controller;
 
-import com.example.account_app.dto.ExpenseDTO;
-import com.example.account_app.dto.ReceiptDTO;
 import com.example.account_app.dto.RegisterRequest;
 import com.example.account_app.dto.UserDTO;
 import com.example.account_app.mapper.UserMapper;
 import com.example.account_app.model.User;
-import com.example.account_app.service.expense.ExpenseService;
-import com.example.account_app.service.receipt.ReceiptService;
 import com.example.account_app.service.user.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -26,7 +23,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/get/all")
     public List<UserDTO> getAllUsers() {
         log.info("Fetching all users");
@@ -34,7 +31,7 @@ public class UserController {
         log.info("Found {} users", users.size());
         return users;
     }
-
+    @SecurityRequirement(name = "BearerAuth")
     @GetMapping("/get/{id}")
     public UserDTO getUserById(@PathVariable Integer id) {
         log.info("Fetching user by id: {}", id);
@@ -63,11 +60,14 @@ public class UserController {
         log.info("User registered successfully: {}", saved);
         return ResponseEntity.ok(UserMapper.toDTO(saved));
     }
-
-    @DeleteMapping("/delete/{id}")
-    public void deleteUser(@PathVariable Integer id) {
-        log.info("Deleting user with id: {}", id);
-        userService.deleteUser(id);
-        log.info("User deleted successfully");
+    @SecurityRequirement(name = "BearerAuth")
+    @DeleteMapping("/delete/me")
+    public ResponseEntity<String> deleteCurrentUser() {
+        String login = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("Deleting user with login: {}", login);
+        userService.deleteUserByLogin(login);
+        log.info("User {} deleted successfully", login);
+        return ResponseEntity.ok("User deleted successfully");
     }
+
 }

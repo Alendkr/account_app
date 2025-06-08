@@ -1,4 +1,4 @@
-package com.example.account_app.service.expense;
+package com.example.account_app.service;
 
 import com.example.account_app.dto.ExpenseDTO;
 import com.example.account_app.mapper.ExpenseMapper;
@@ -55,6 +55,11 @@ public class ExpenseService {
 
         Expense expense = ExpenseMapper.toEntity(dto, user, category);
         expenseRepository.save(expense);
+
+        int newBalance = user.getMoney() - expense.getAmount();
+        user.setMoney(newBalance);
+        userRepository.save(user);
+
     }
 
     public void deleteExpense(int id) {

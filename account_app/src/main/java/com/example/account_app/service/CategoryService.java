@@ -1,4 +1,4 @@
-package com.example.account_app.service.category;
+package com.example.account_app.service;
 
 import com.example.account_app.dto.CategoryDTO;
 import com.example.account_app.mapper.CategoryMapper;

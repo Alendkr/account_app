@@ -1,4 +1,4 @@
-package com.example.account_app.service.receipt;
+package com.example.account_app.service;
 
 import com.example.account_app.dto.ReceiptDTO;
 import com.example.account_app.mapper.ReceiptMapper;
@@ -58,6 +58,11 @@ public class ReceiptService {
 
         Receipt receipt = ReceiptMapper.toEntity(dto, user, category);
         receiptRepository.save(receipt);
+        
+        int newBalance = user.getMoney() + receipt.getAmount();
+        user.setMoney(newBalance);
+        userRepository.save(user);
+
     }
 
     public void deleteReceipt(int id) {

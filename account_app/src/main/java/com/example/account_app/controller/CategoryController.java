@@ -1,14 +1,15 @@
 package com.example.account_app.controller;
 
 import com.example.account_app.dto.CategoryDTO;
-import com.example.account_app.service.category.CategoryService;
+import com.example.account_app.service.CategoryService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+@SecurityRequirement(name = "BearerAuth")
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {

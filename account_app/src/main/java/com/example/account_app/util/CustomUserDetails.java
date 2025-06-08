@@ -1,4 +1,4 @@
-package com.example.account_app.service.user;
+package com.example.account_app.util;
 
 import com.example.account_app.model.User;
 import lombok.Getter;
@@ -33,7 +33,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // или роли, если реализуешь
+        return Collections.emptyList();
     }
 
     @Override
